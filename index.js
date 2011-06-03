@@ -1,6 +1,7 @@
 var _SESSION_KEY = "AKSID";
 var _DEFAULT_SESSIONRV_NAME = "Session";
 var _session_table = null;
+var CHARS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');
 
 function _getSessionRv(name){
   if(!name){
