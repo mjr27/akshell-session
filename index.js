@@ -15,17 +15,26 @@ function _getSessionRv(name){
   return rv[name];
 }
 
-function _generateGuid(){
-  var result, i, j;
-  result = '';
-  for(j=0; j<32; j++){
-    if( j === 8 || j === 12|| j === 16|| j === 20){
-      result = result + '-';
+function getUuid (len, radix) {
+  var chars = CHARS, uuid = [], i;
+  radix = radix || chars.length;
+
+  // rfc4122, version 4 form
+  var r;
+
+  // rfc4122 requires these characters
+  uuid[8] = uuid[13] = uuid[18] = uuid[23] = '-';
+  uuid[14] = '4';
+
+  // Fill in random data.  At i==19 set the high bits of clock sequence as
+  // per rfc4122, sec. 4.1.5
+  for (i = 0; i < 36; i++) {
+    if (!uuid[i]) {
+      r = 0 | Math.random()*16;
+      uuid[i] = chars[(i === 19) ? (r & 0x3) | 0x8 : r];
     }
-    i = Math.floor(Math.random()*16).toString(16).toUpperCase();
-    result = result + i;
   }
-  return result;
+  return uuid.join('');
 }
 
 var session_middleware = function(func){
@@ -48,7 +57,7 @@ var session_middleware = function(func){
     }
 
     if (!request.session){
-      session_id = _generateGuid();
+      session_id = getUuid();
       var session = _session_table.insert({sid: session_id, data: {}});
       request.session = {};
     }
