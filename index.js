@@ -1,5 +1,19 @@
 var _SESSION_KEY = "AKSID";
+var _DEFAULT_SESSIONRV_NAME = "Session";
 var _session_table = null;
+
+function _getSessionRv(name){
+  if(!name){
+    name = _DEFAULT_SESSIONRV_NAME;
+  }
+  if(!rv[name].exists()){
+    rv[name].create({
+      'sid': 'string unique',
+      'data': ['json', {}]
+    });
+  }
+  return rv[name];
+}
 
 function _generateGuid(){
   var result, i, j;
@@ -59,6 +73,9 @@ var session_middleware = function(func){
 exports.middleware = session_middleware;
 
 exports.init=function(sessionTable){
-  _session_table = sessionTable;
+  if(!sessionTable){
+    sessionTable = _DEFAULT_SESSIONRV_NAME;
+  }
+  _session_table = _getSessionRv(sessionTable);
   return this;
-}
+};
